@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="https://jakarta.ee/xml/ns/jakartaee"
+	xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+	version="5.0">
+
+	<display-name>Sports Quiz Application</display-name>
+
+	<description>
+		This web application maintains various sports quizzes. 
+	</description>
+	
+	
+	<listener>
+        <listener-class>edu.skidmore.cs276.lab04.webapps.web.AppContextListener</listener-class>
+    </listener>
+    
+    <context-param>
+			<param-name>RdbDriverClass</param-name>
+			<param-value>com.mysql.cj.jdbc.Driver</param-value>
+		</context-param>
+		<context-param>
+			<param-name>RdbUrl</param-name>
+			<param-value>jdbc:mysql://192.168.124.100:3306/jneckles_tl</param-value>
+		</context-param>
+		<context-param>
+			<param-name>RdbUserId</param-name>
+			<param-value>jneckles_tl_app</param-value>
+		</context-param>
+		<context-param>
+			<param-name>RdbPassword</param-name>
+			<param-value>sa6Ro1aer2</param-value>
+		</context-param>
+
+	<filter>
+	<filter-name>AuthenticationFilter</filter-name>
+	<filter-class>edu.skidmore.cs276.lab04.webapps.web.AuthenticationFilter</filter-class>
+	</filter>
+	
+	<filter-mapping>
+	<filter-name>AuthenticationFilter</filter-name>
+	<url-pattern>/quizme/*</url-pattern>
+	</filter-mapping>
+	
+	<filter>
+        <filter-name>AdminAuthFilter</filter-name>
+        <filter-class>edu.skidmore.cs276.lab04.webapps.web.AdminAuthFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AdminAuthFilter</filter-name>
+        <url-pattern>/admin/*</url-pattern> </filter-mapping>
+        
+	<servlet>
+	<servlet-name>AuthServlet</servlet-name>
+	<servlet-class>edu.skidmore.cs276.lab04.webapps.web.AuthControllerServlet</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+	<servlet-name>AuthServlet</servlet-name>
+	<url-pattern>/authenticate</url-pattern> </servlet-mapping>
+	
+	<servlet>
+	<servlet-name>QuizServlet</servlet-name>
+	<servlet-class>edu.skidmore.cs276.lab04.webapps.web.QuizControllerServlet</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+	<servlet-name>QuizServlet</servlet-name>
+	<url-pattern>/quizme</url-pattern> </servlet-mapping>
+	
+	<servlet>
+        <servlet-name>AdminServlet</servlet-name>
+        <servlet-class>edu.skidmore.cs276.lab04.webapps.web.AdminControllerServlet</servlet-class>
+        </servlet>
+        
+    <servlet-mapping>
+        <servlet-name>AdminServlet</servlet-name>
+        <url-pattern>/admin</url-pattern> </servlet-mapping>
+        
+    <session-config>
+        <session-timeout>30</session-timeout>
+        <cookie-config>
+            <http-only>true</http-only>
+            </cookie-config>
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
+    
+    <error-page>
+        <error-code>404</error-code> <location>/WEB-INF/hiddenjsp/error_404.jsp</location>
+    </error-page>
+    
+    <error-page>
+        <error-code>401</error-code> <location>/WEB-INF/hiddenjsp/error_401.jsp</location>
+    </error-page>
+    
+    <error-page>
+        <error-code>403</error-code> <location>/WEB-INF/hiddenjsp/error_403.jsp</location>
+    </error-page>
+    
+    <error-page>
+        <error-code>500</error-code> <location>/WEB-INF/hiddenjsp/error_505.jsp</location>
+    </error-page>
+        
+    
+	<welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+	
+	
+	
+
+	<!-- Preload the JSP -->
+
+	
+	
+	
+	
+
+	<!-- Preload the JSP -->
+	
+
+	<!-- Handle persisting the tasklist when a session expires -->
+	
+
+
+	<!-- Preload the JSP -->
+	
+
+	<!-- Handle persisting the tasklist when a session expires -->
+	
+</web-app>

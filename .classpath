@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/test/java"/>
+	<classpathentry kind="src" path="src/main/config"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/asm-7.3.1.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/asm-analysis-7.3.1.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/asm-commons-7.3.1.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/asm-tree-7.3.1.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/asm-util-7.3.1.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/asm-xml-6.2.1.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/byte-buddy-1.14.14.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/byte-buddy-agent-1.14.14.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/catalina-ant.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/catalina.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/checkstyle-8.28-all.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/commons-lang3-3.3.2.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/hamcrest-2.2.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/jacocoagent.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/jacocoant.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/jacococli.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/jaxen-1.1.4.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/jetty-6.1.14.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/jetty-util-6.1.14.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/junit-4.13.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/logback-classic-1.0.13.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/logback-core-1.0.13.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/mockito-core-5.11.0.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/objenesis-3.1.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/org.jacoco.agent-0.8.10.202304240956.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/org.jacoco.ant-0.8.10.202304240956.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/org.jacoco.core-0.8.10.202304240956.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/org.jacoco.report-0.8.10.202304240956.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/oro-2.0.8.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/servlet-api-2.5-6.1.14.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/servlet-api.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/slf4j-api-1.7.5.jar"/>
+	<classpathentry kind="lib" path="/Users/jamarn/cs276-IndividualLabWork/cs276 libaries/taglibs-standard-impl-1.2.5.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/log4j-1.2.17.jar"/>
+	<classpathentry kind="output" path="src/main/webapp/WEB-INF/classes"/>
+</classpath>

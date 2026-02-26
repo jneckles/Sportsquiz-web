@@ -1,0 +1,308 @@
+<!--
+
+Ant Build file for CS276 Web Apps Class: Tasklist Session
+
+Last Update: 2025-01-01
+
+Update History
+==============
+2016-08-05: Initial version
+2016-10-15: Coordinated JAR and WAR targets
+2024-12-20: Update to use new Tomcat packages
+2025-01-01: Added JUnit and JaCoCo configuration
+-->
+<project name="Project3" default="dist" basedir="." xmlns:jacoco="antlib:org.jacoco.ant">
+  <!-- project properties are in build.properties -->
+  <property file="build.properties"/>
+
+	<!-- main build classpath -->
+	<path id="build.class.path">
+		<fileset dir="${rootLibDir}/${envLibDir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${mainLibDir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<!-- environment classpath -->
+	<path id="environment.class.path">
+		<fileset dir="${rootLibDir}/${envLibDir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<!-- test build classpath -->
+	<path id="test.class.path">
+		<fileset dir="${rootLibDir}/${envLibDir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${rootLibDir}/${testLibDir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${mainLibDir}">
+			<include name="**/*.jar" />
+		</fileset>
+		 <pathelement location="${buildDir}" />
+	</path>
+
+	<!-- code generation buildpath -->
+	<path id="gen.class.path">
+		<fileset dir="${rootLibDir}/${envLibDir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${genLibDir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${mainLibDir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<!-- Checkstyle task definition -->
+	<taskdef resource="com/puppycrawl/tools/checkstyle/ant/checkstyle-ant-task.properties"
+	         classpath="${rootLibDir}/${testLibDir}/${checkstyleJarFile}"/>
+
+	<!-- JaCoCo task definition -->
+	<taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+                <classpath path="${rootLibDir}/${testLibDir}/${jacocoJarFile}"/>
+        </taskdef>
+
+  <!-- clean out previously built project files -->
+  <target name="clean">
+    <!-- Delete the ${buildDir}, ${distDir} and ${javadocDir} directory trees -->
+    <delete dir="${buildDir}"/>
+    <delete dir="${testBuildDir}"/>
+    <delete dir="${distDir}"/>
+    <delete dir="${genDir}"/>
+    <delete dir="${javadocDir}"/>
+  </target>
+
+  <!-- setup steps required before compilation -->
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${buildDir}"/>
+    <mkdir dir="${testBuildDir}"/>
+    <mkdir dir="${distDir}"/>
+    <mkdir dir="${genDir}/bin"/>
+  </target>
+
+  <!-- compilation -->
+  <target name="compile" depends="init">
+    <!-- Compile the java code from ${srcJavaDir} into ${buildDir} -->
+    <javac srcdir="${mainJavaSrcDir}" destdir="${buildDir}" debug="Yes" source="${sourceVersion}" includeantruntime="false">
+      <classpath refid="build.class.path"/>
+    </javac>
+    <copy todir="${buildDir}">
+      <fileset dir="${mainConfigDir}"/>
+    </copy>  
+  </target>
+
+	<!-- clean out generated source code -->
+	<target name="clean-gen-src">
+		<delete dir="${genSrcDir}" quiet="true" />
+	</target>
+
+	<!-- compiles test Java source -->
+	<target name="test-compile" depends="compile">
+		<javac destdir="${testBuildDir}" deprecation="yes" debug="yes" includeantruntime="false">
+			<src path="${testJavaSrcDir}" />
+			<classpath refid="test.class.path" />
+			<classpath>
+				<pathelement location="${mainBuildDir}" />
+			</classpath>
+		</javac>
+		<copy todir="${testBuildDir}">
+  			<fileset dir="${testConfigDir}">
+			    <include name="**/*"/>
+			</fileset>
+		</copy>
+
+	</target>
+
+	<!-- Make the JavaDoc -->
+	<target name="javadoc" depends="init">
+		<!-- Clean-out the JavaDoc directory -->
+		<delete dir="${genJavadocDir}" quiet="true" />
+		<mkdir dir="${genJavadocDir}" />
+
+		<javadoc sourcepath="${mainJavaSrcDir}" packagenames="${javadocPackageNames}" destdir="${genJavadocDir}" Private="yes" >
+			<classpath refid="build.class.path" />
+		</javadoc>
+	</target>
+
+	<!-- Unit test the codebase - with coverage -->
+	<target name="test" depends="test-compile">
+		<!-- Clean-out all unit test and coverage directories -->
+
+		<!-- delete JUnit XML output directory -->
+		<delete dir="${genRawUnitTestReportsDir}" quiet="true" />
+
+		<!-- create JUnit XML output directory -->
+		<mkdir dir="${genRawUnitTestReportsDir}" />
+
+		<!-- delete JUnit HTML output directory -->
+		<delete dir="${genFormattedUnitTestReportsDir}" quiet="true" />
+
+		<!-- create JUnit HTML output directory -->
+		<mkdir dir="${genFormattedUnitTestReportsDir}" />
+
+		<!-- delete JaCoCo data directory -->
+		<delete dir="${genJaCoCoDataFileDir}" quiet="true" />
+
+		<!-- create JaCoCo data directory -->
+		<mkdir dir="${genJaCoCoDataFileDir}" />
+
+		<!-- delete JaCoCo HTML reports directory -->
+		<delete dir="${genJaCoCoReportsDir}" quiet="true" />
+
+		<!-- create JaCoCo HTML reports directory -->
+		<mkdir dir="${genJaCoCoReportsDir}" />
+
+		<!-- Run all JUnit tests using JaCoCo coverage -->
+
+		<jacoco:coverage destfile="${genJaCoCoDataFileDir}/${jacocoDataFileName}">
+			<junit printsummary="yes" haltonfailure="no"
+				failureproperty="tests.failed"
+				fork="yes" maxmemory="512m">
+
+				<jvmarg line="-Dlog4j.debug"/>
+
+				<!-- define the classpath for JUnit to use -->
+				<classpath>
+					<!-- put JUnit test cases onto the classpath -->
+					<pathelement location="${testBuildDir}" />
+
+					<!-- put production classes onto the classpath -->
+					<pathelement location="${mainBuildDir}" />
+
+					<!-- put dependent jar files into the classpath -->
+					<path refid="test.class.path" />
+				</classpath>
+
+				<!-- Use JUnit's xml formatter -->
+				<formatter type="xml" />
+
+				<!-- execute the tests -->
+				<batchtest fork="yes"
+					todir="${genRawUnitTestReportsDir}">
+					<fileset dir="${testBuildDir}">
+						<include name="**/*Test.class" />
+						<exclude name="**/*$*.class" />
+					</fileset>
+				</batchtest>
+			</junit>
+		</jacoco:coverage>
+
+		<!-- Create the HTML-formatted unit test report -->
+		<junitreport todir="${genFormattedUnitTestReportsDir}">
+			<fileset dir="${genRawUnitTestReportsDir}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${genFormattedUnitTestReportsDir}" />
+		</junitreport>
+
+		<!-- create the HTML-formatted coverage report -->
+		<jacoco:report>
+        		<executiondata>
+				<file file="${genJaCoCoDataFileDir}/${jacocoDataFileName}"/>
+			</executiondata>
+
+			<structure name="${jacocoReportTitle}">
+				<classfiles>
+					<fileset dir="${buildDir}"/>
+				</classfiles>
+				<sourcefiles encoding="UTF-8">
+					<fileset dir="${mainJavaSrcDir}"/>
+				</sourcefiles>
+			</structure>
+			<html destdir="${genJaCoCoReportsDir}"/>
+		</jacoco:report>
+
+		<!-- Print an alert if one or more tests failed -->
+		<fail if="tests.failed">
+			Failed: ${tests.failed}
+			****************************************************
+			****************************************************
+			**** One or more tests failed! Check the output ****
+			****************************************************
+			****************************************************
+		</fail>
+	</target>
+
+	<!-- Generate a checkstyle report -->
+	<target name="checkstyle-report" depends="init">
+		<checkstyle config="${checkstyleConfigFile}" failureProperty="checks.failed" maxWarnings="0" failOnViolation="false">
+  			<fileset dir="${mainJavaSrcDir}" includes="**/*.java"/>
+  			<fileset dir="${testJavaSrcDir}" includes="**/*.java"/>
+  			<formatter type="plain"/>
+  			<formatter type="plain" toFile="${genCheckstyleReportsDir}/${checkstyleTextReportFile}"/>
+  			<formatter type="xml" toFile="${genCheckstyleReportsDir}/${checkstyleXmlReportFile}"/>
+				<property key="checkstyle.suppressions.file" file="${checkstyleSuppressionsConfigFile}"/>
+		</checkstyle>
+
+		<!-- print alert if one or more tests failed -->
+
+		<fail if="checks.failed">
+			Failed: ${checks.failed}
+			*****************************************************
+			*****************************************************
+			**** One or more checks failed! Check the output ****
+			*****************************************************
+			*****************************************************
+		</fail>
+	</target>
+
+  <!-- make project deployment file(s) -->
+  <target name="dist" depends="distwar"/>
+
+  <!-- ################ -->
+  <!-- BEGIN: Java Web Application Steps -->
+
+  <!-- Make Project WAR File -->
+  <target name="distwar" depends="buildwar"/>
+
+  <!-- build the WAR -->
+  <target name="buildwar" depends="compile">
+    <war warfile="${distDir}/${warName}.war" webxml="${webappDir}/WEB-INF/web.xml" manifest="${webappDir}/META-INF/MANIFEST.MF"> 
+      <fileset dir="${webappDir}">
+	    <include name="**"/>
+	    <exclude name="WEB-INF/web.xml"/>
+	    <exclude name="META-INF/MANIFEST.MF"/>
+        <exclude name="**/*Test.class" />
+        <exclude name="**/test/*"/>
+      </fileset>
+    </war>
+  </target>
+
+
+  <taskdef name="deploy" classpathref="environment.class.path" classname="org.apache.catalina.ant.DeployTask"/>
+  <taskdef name="list" classpathref="environment.class.path" classname="org.apache.catalina.ant.ListTask"/>
+  <taskdef name="undeploy" classpathref="environment.class.path" classname="org.apache.catalina.ant.UndeployTask"/> 
+
+  <!-- deploy app into container -->
+  <target name="deploy" description="Install application to servlet container" depends="distwar">
+    <deploy url="${container.manager.url}" username="${container.manager.username}" password="${container.manager.password}" path="/${deploymentContextName}" war="file://${basedir}/${distDir}/${warName}.war"/>
+  </target>
+
+  <!-- undeploy app from container -->
+  <target name="undeploy" description="Remove application on servlet container">
+    <undeploy url="${container.manager.url}" username="${container.manager.username}" password="${container.manager.password}" path="/${deploymentContextName}"/>
+  </target>
+
+  <!-- list all apps desployed on servlet container -->
+  <target name="list" description="List installed applications on servlet container">
+    <list url="${container.manager.url}" username="${container.manager.username}" password="${container.manager.password}"/>
+  </target>
+
+  <!-- Redeploy - convenience for distwar, undeploy, deploy -->
+  <target name="redeploy" depends="distwar">
+    <antcall target="undeploy"/>
+    <antcall target="deploy"/>
+  </target>
+
+  <!-- END: Java Web Application Steps -->
+  <!-- ################ -->
+</project>
