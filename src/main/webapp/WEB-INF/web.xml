@@ -21,15 +21,15 @@
 		</context-param>
 		<context-param>
 			<param-name>RdbUrl</param-name>
-			<param-value>jdbc:mysql://192.168.124.100:3306/jneckles_tl</param-value>
+			<param-value>jdbc:mysql://localhost:3306/sports_quiz?createDatabaseIfNotExist=true&amp;useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=America/New_York</param-value>
 		</context-param>
 		<context-param>
 			<param-name>RdbUserId</param-name>
-			<param-value>jneckles_tl_app</param-value>
+			<param-value>root</param-value>
 		</context-param>
 		<context-param>
 			<param-name>RdbPassword</param-name>
-			<param-value>sa6Ro1aer2</param-value>
+			<param-value></param-value>
 		</context-param>
 
 	<filter>
@@ -98,7 +98,7 @@
     </error-page>
     
     <error-page>
-        <error-code>500</error-code> <location>/WEB-INF/hiddenjsp/error_505.jsp</location>
+        <error-code>500</error-code> <location>/WEB-INF/hiddenjsp/error_500.jsp</location>
     </error-page>
         
     

@@ -4,7 +4,9 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 
-
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
@@ -31,40 +33,35 @@ public class AppContextListener implements ServletContextListener {
 	 */
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		LOG.trace("AppContextListener: Initializing application context"); // Use	
+		LOG.trace("AppContextListener: Initializing application context");
 		
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException("MySQL JDBC driver is not available", e);
 		}
 		ServletContext context = sce.getServletContext();
-		
+		Properties fileConfig = loadFileConfig();
 
-		String RdbUrl = context.getInitParameter("RdbUrl");
-		String RdbUserId = context.getInitParameter("RdbUserId");
-		String RdbPassword = context.getInitParameter("RdbPassword");
+		String RdbUrl = resolveConfig("SPORTSQUIZ_DB_URL", "db.url", "RdbUrl", context, fileConfig, false);
+		String RdbUserId = resolveConfig("SPORTSQUIZ_DB_USER", "db.user", "RdbUserId", context, fileConfig, false);
+		String RdbPassword = resolveConfig("SPORTSQUIZ_DB_PASSWORD", "db.password", "RdbPassword", context, fileConfig, true);
+		boolean initializeDatabase = Boolean.parseBoolean(
+				resolveConfig("SPORTSQUIZ_DB_INITIALIZE", "db.initialize", null, context, fileConfig, true, "true"));
 
-		// ensure that parameters were found
-		if (RdbUrl == null || RdbUserId == null || RdbPassword == null) {
-			LOG.error("ERROR: Database configuration parameters (dbUrl, dbUser, dbPassword) not found in web.xml <context-param>!"); 
-																																			
-			throw new RuntimeException("Database configuration missing in web.xml");
+		if (RdbUrl == null || RdbUserId == null) {
+			LOG.error("Database configuration is missing. Set SPORTSQUIZ_DB_URL and SPORTSQUIZ_DB_USER or edit src/main/config/app.properties.");
+			throw new RuntimeException("Database configuration missing for Sports Quiz");
 		}
-		LOG.trace("Database Config Read: URL=" + RdbUrl + ", User=" + RdbUserId);  
-																						 
+		LOG.trace("Database Config Read: URL=" + RdbUrl + ", User=" + RdbUserId);
 
-		// Init DAO Implementation & Pass connection parameters directly
-		//  JdbcQuizDAO constructor is updated to accept the parameters.
+		if (initializeDatabase) {
+			DatabaseBootstrapper.initializeIfNeeded(RdbUrl, RdbUserId, RdbPassword);
+		}
+
 		QuizDAO quizDAO = new JdbcQuizDAO(RdbUrl, RdbUserId, RdbPassword);
-
-		// Init Service Layers
 		QuizService quizService = new QuizService(quizDAO);
-
-		// Store initialized Services/Resources in ServletContext
 		context.setAttribute("quizService", quizService);
-
 
 		LOG.trace("AppContextListener: QuizService initialized and added to context."); 
 		LOG.trace("Application context initialization complete."); 
@@ -79,9 +76,46 @@ public class AppContextListener implements ServletContextListener {
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
 		LOG.trace("AppContextListener: Destroying application context");
-
-		
-
 		LOG.trace("Application context cleanup complete.");
+	}
+
+	private Properties loadFileConfig() {
+		Properties properties = new Properties();
+		try (InputStream input = AppContextListener.class.getClassLoader().getResourceAsStream("app.properties")) {
+			if (input != null) {
+				properties.load(input);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to load app.properties", e);
+		}
+		return properties;
+	}
+
+	private String resolveConfig(String envName, String fileKey, String contextKey, ServletContext context,
+			Properties fileConfig, boolean allowBlank) {
+		return resolveConfig(envName, fileKey, contextKey, context, fileConfig, allowBlank, null);
+	}
+
+	private String resolveConfig(String envName, String fileKey, String contextKey, ServletContext context,
+			Properties fileConfig, boolean allowBlank, String defaultValue) {
+		String value = System.getenv(envName);
+		if (value == null) {
+			value = fileConfig.getProperty(fileKey);
+		}
+		if (value == null && contextKey != null) {
+			value = context.getInitParameter(contextKey);
+		}
+		if (value == null) {
+			return defaultValue;
+		}
+
+		String trimmedValue = value.trim();
+		if (trimmedValue.isEmpty() && !allowBlank) {
+			return defaultValue;
+		}
+		if (trimmedValue.isEmpty()) {
+			return "";
+		}
+		return trimmedValue;
 	}
 }

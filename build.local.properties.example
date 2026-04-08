@@ -1,0 +1,10 @@
+# Copy this file to build.local.properties if your Tomcat jars or manager
+# credentials differ from the defaults in build.properties.
+#
+# Example:
+# rootLibDir=/path/to/your/libraries
+# envLibDir=lib
+# testLibDir=lib
+# container.manager.url=http://localhost:8080/manager/text
+# container.manager.username=your-manager-user
+# container.manager.password=your-manager-password

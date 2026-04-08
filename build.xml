@@ -12,7 +12,9 @@ Update History
 2025-01-01: Added JUnit and JaCoCo configuration
 -->
 <project name="Project3" default="dist" basedir="." xmlns:jacoco="antlib:org.jacoco.ant">
-  <!-- project properties are in build.properties -->
+  <!-- local overrides go in build.local.properties -->
+  <property environment="env"/>
+  <property file="build.local.properties"/>
   <property file="build.properties"/>
 
 	<!-- main build classpath -->
@@ -97,7 +99,12 @@ Update History
     </javac>
     <copy todir="${buildDir}">
       <fileset dir="${mainConfigDir}"/>
-    </copy>  
+    </copy>
+    <copy todir="${buildDir}">
+      <fileset dir="${mainJavaSrcDir}">
+        <include name="**/*.sql"/>
+      </fileset>
+    </copy>
   </target>
 
 	<!-- clean out generated source code -->
